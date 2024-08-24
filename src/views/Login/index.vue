@@ -73,28 +73,23 @@ export default {
       this.$refs.form.validate(async(valid) => {
         if (valid) {
           // 下面一行是异步操作,需要加上await保证异步操作执行完毕，再执行后面的跳转
-          try {
-            await this.$store.dispatch('user/loginAction', this.loginForm)
-            if (this.remeberMe) {
-              localStorage.setItem(FORM_KEY, JSON.stringify(this.loginForm))
-            } else {
-              localStorage.removeItem(FORM_KEY)
-            }
-            // 实现哪个页面退出的，登录成功后就跳转到哪个页面
-            /**
-             * route和router的区别
-             * route是当前路由对象，包含了当前路由的一些信息，例如：name、path、meta、params、query等
-             * router是VueRouter的实例对象，包含了路由的一些方法，例如：push、replace、go等
-             */
-            if (this.$route.query.redirect) {
-              console.log(this.$route.query.redirect)
-              await this.$router.push(this.$route.query.redirect)
-            } else {
-              await this.$router.push('/')
-            }
-          } catch (error) {
-            console.log('error submit!!')
-            this.$message.error(error.response.data.msg)
+          await this.$store.dispatch('user/loginAction', this.loginForm)
+          if (this.remeberMe) {
+            localStorage.setItem(FORM_KEY, JSON.stringify(this.loginForm))
+          } else {
+            localStorage.removeItem(FORM_KEY)
+          }
+          // 实现哪个页面退出的，登录成功后就跳转到哪个页面
+          /**
+           * route和router的区别
+           * route是当前路由对象，包含了当前路由的一些信息，例如：name、path、meta、params、query等
+           * router是VueRouter的实例对象，包含了路由的一些方法，例如：push、replace、go等
+           */
+          if (this.$route.query.redirect) {
+            console.log(this.$route.query.redirect)
+            await this.$router.push(this.$route.query.redirect)
+          } else {
+            await this.$router.push('/')
           }
         } else {
           this.$message.error('用户名或密码不可为空')

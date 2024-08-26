@@ -3,12 +3,12 @@
     <!-- 搜索区域 -->
     <div class="search-container">
       <span class="search-label">车牌号码：</span>
-      <el-input clearable placeholder="请输入内容" v-model="params.carNumber" class="search-main" />
+      <el-input v-model="params.carNumber" clearable placeholder="请输入内容" class="search-main" />
       <span class="search-label">车主姓名：</span>
-      <el-input clearable placeholder="请输入内容" v-model="params.personName" class="search-main" />
+      <el-input v-model="params.personName" clearable placeholder="请输入内容" class="search-main" />
       <span class="search-label">状态：</span>
       <el-select v-model="params.cardStatus">
-        <el-option v-for="item in statusList" :key="item.value" :label="item.text" :value="item.value"/>
+        <el-option v-for="item in statusList" :key="item.value" :label="item.text" :value="item.value" />
       </el-select>
       <el-button type="primary" class="search-btn" @click="getCardList">查询</el-button>
     </div>
@@ -20,7 +20,7 @@
     <!-- 表格区域 -->
     <div class="table">
       <el-table style="width: 100%" :data="list">
-        <el-table-column type="index" label="序号" :index="indexMethod"/>
+        <el-table-column type="index" label="序号" :index="indexMethod" />
         <el-table-column label="车主名称" prop="personName" />
         <el-table-column label="联系方式" prop="phoneNumber" />
         <el-table-column label="车牌号码" prop="carNumber" />
@@ -31,7 +31,7 @@
           <template #default="scope">
             <el-button size="mini" type="text">续费</el-button>
             <el-button size="mini" type="text">查看</el-button>
-            <el-button size="mini" type="text">编辑</el-button>
+            <el-button size="mini" type="text" @click="editCard(scope.row.id)">编辑</el-button>
             <el-button size="mini" type="text">删除</el-button>
           </template>
         </el-table-column>
@@ -112,6 +112,14 @@ export default {
     this.getCardList()
   },
   methods: {
+    editCard(id) {
+      this.$router.push({
+        path: '/car/cardAdd',
+        query: {
+          id
+        }
+      })
+    },
     // 计算序号
     indexMethod(index) {
       return (this.params.page - 1) * this.params.pageSize + index + 1

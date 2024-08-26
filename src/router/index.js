@@ -8,6 +8,10 @@ import Layout from '@/layout'
 
 export const routes = [
   {
+    path: '/car/cardAdd',
+    component: () => import('@/views/Car/CarCard/add')
+  },
+  {
     path: '/login',
     component: () => import('@/views/Login/index'),
     hidden: true

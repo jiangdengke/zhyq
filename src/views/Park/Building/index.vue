@@ -37,8 +37,9 @@
         </template>
       </el-dialog>
 
+    </div>
+    <div>
       <el-button class="add-building-button" type="primary" @click="addBuilding">添加楼宇</el-button>
-
     </div>
     <!-- 表格区域 -->
     <div class="table">

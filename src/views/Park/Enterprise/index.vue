@@ -3,11 +3,11 @@
     <!-- 搜索区域 -->
     <div class="search-container">
       <div class="search-label">企业名称：</div>
-      <el-input clearable placeholder="请输入内容" class="search-main" />
-      <el-button type="primary">查询</el-button>
+      <el-input v-model="params.name" clearable placeholder="请输入内容" class="search-main" @clear="doSearch" />
+      <el-button type="primary" @click="doSearch">查询</el-button>
     </div>
     <div class="create-container">
-      <el-button type="primary">添加企业</el-button>
+      <el-button type="primary" @click="$router.push('/enterpriseAdd')">添加企业</el-button>
     </div>
     <!-- 表格区域 -->
     <div class="table">
@@ -23,7 +23,7 @@
           <template #default="scope">
             <el-button size="mini" type="text">添加合同</el-button>
             <el-button size="mini" type="text">查看</el-button>
-            <el-button size="mini" type="text">编辑</el-button>
+            <el-button size="mini" type="text" @click="toEditPage(scope.row.id)">编辑</el-button>
             <el-button size="mini" type="text">删除</el-button>
           </template>
         </el-table-column>
@@ -51,7 +51,8 @@ export default {
       exterpriseList: [],
       params: {
         page: 1,
-        pageSize: 5
+        pageSize: 5,
+        name: '' // 增加字段name
       },
       total: 0
     }
@@ -60,6 +61,20 @@ export default {
     this.getExterpriseList()
   },
   methods: {
+    toEditPage(id) {
+      // console.log(id)
+      this.$router.push({
+        path: '/enterpriseAdd',
+        query: {
+          id
+        }
+      })
+    },
+    // 准备查询后调方法
+    doSearch() {
+      this.params.page = 1
+      this.getExterpriseList()
+    },
     // 计算序号
     indexMethod(index) {
       return (this.params.page - 1) * this.params.pageSize + index + 1

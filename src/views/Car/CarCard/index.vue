@@ -15,26 +15,35 @@
     <!-- 新增删除操作区域 -->
     <div class="create-container">
       <el-button type="primary" @click="$router.push('/car/cardAdd')">添加月卡</el-button>
-      <el-button>批量删除</el-button>
+      <el-button @click="delCartList">批量删除</el-button>
     </div>
     <!-- 表格区域 -->
     <div class="table">
-      <el-table style="width: 100%" :data="list">
-        <el-table-column type="index" label="序号" :index="indexMethod" />
-        <el-table-column label="车主名称" prop="personName" />
-        <el-table-column label="联系方式" prop="phoneNumber" />
-        <el-table-column label="车牌号码" prop="carNumber" />
-        <el-table-column label="车辆品牌" prop="carBrand" />
-        <el-table-column label="剩余有效天数" prop="totalEffectiveDate" />
-        <el-table-column label="状态" prop="cardStatus" :formatter="formatterStatus" />
-        <el-table-column label="操作" fixed="right" width="180">
-          <template #default="scope">
-            <el-button size="mini" type="text">续费</el-button>
-            <el-button size="mini" type="text">查看</el-button>
-            <el-button size="mini" type="text" @click="editCard(scope.row.id)">编辑</el-button>
-            <el-button size="mini" type="text">删除</el-button>
-          </template>
-        </el-table-column>
+      <el-table
+        style="width: 100%"
+        :data="list"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column
+          type="selection"
+          width="55"
+        >        </el-table-column>
+          <el-table-column type="index" label="序号" :index="indexMethod" />
+          <el-table-column label="车主名称" prop="personName" />
+          <el-table-column label="联系方式" prop="phoneNumber" />
+          <el-table-column label="车牌号码" prop="carNumber" />
+          <el-table-column label="车辆品牌" prop="carBrand" />
+          <el-table-column label="剩余有效天数" prop="totalEffectiveDate" />
+          <el-table-column label="状态" prop="cardStatus" :formatter="formatterStatus" />
+          <el-table-column label="操作" fixed="right" width="180">
+            <template #default="scope">
+              <el-button size="mini" type="text">续费</el-button>
+              <el-button size="mini" type="text">查看</el-button>
+              <el-button size="mini" type="text" @click="editCard(scope.row.id)">编辑</el-button>
+              <el-button size="mini" type="text" @click="delCard(scope.row.id)">删除</el-button>
+            </template>
+          </el-table-column>
+
       </el-table>
     </div>
     <div class="page-container">
@@ -87,6 +96,7 @@
 
 <script>
 import { getCardListAPI } from '@/api/card'
+import { deleteCardAPI } from '@/api/card'
 
 export default {
   name: 'Card',
@@ -105,13 +115,60 @@ export default {
         { text: '全部', value: null },
         { text: '可用', value: 0 },
         { text: '已过期', value: 1 }
-      ]
+      ], // 已选择列表
+      selectedCarList: []
     }
   },
   created() {
     this.getCardList()
   },
   methods: {
+    delCartList() {
+      if (this.selectedCarList.length <= 0) {
+        this.$message.warning('还未选中要删除的数据')
+        return
+      }
+      this.$confirm('此操作将永久删除选择的月卡, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async() => {
+        // 处理id
+        const idList = this.selectedCarList.map(item => item.id)
+        await deleteCardAPI(idList.join(','))
+        await this.getCardList()
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      }).catch((error) => {
+        console.log(error)
+      })
+    },
+    handleSelectionChange(rowList) {
+      console.log(rowList)
+      this.selectedCarList = rowList
+    },
+    // 删除逻辑
+    delCard(id) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async() => {
+        await deleteCardAPI(id)
+        if (this.list.length === 1 && this.params.page > 1) {
+          this.params.page = 1
+        }
+        await this.getCardList()
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      }).catch((error) => {
+        console.log(error)
+      })
+    },
     editCard(id) {
       this.$router.push({
         path: '/car/cardAdd',

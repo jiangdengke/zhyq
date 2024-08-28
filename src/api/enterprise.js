@@ -65,3 +65,46 @@ export function updateExterpriseAPI(data) {
     data
   })
 }
+/**
+ * 删除企业
+ * @param {*} id
+ * @returns
+ */
+export function delEnterpriseAPI(id) {
+  return request({
+    url: `/park/enterprise/${id}`,
+    method: 'DELETE'
+  })
+}
+/**
+ * 获取楼宇列表
+ * @param {*} id
+ * @returns
+ */
+export function getRentBuildListAPI() {
+  return request({
+    url: '/park/rent/building'
+  })
+}
+/**
+ * 创建合同
+ * @param {*}
+ * @returns
+ */
+export function createRentAPI(data) {
+  return request({
+    url: '/park/enterprise/rent',
+    method: 'POST',
+    data
+  })
+}
+/**
+ * 获取合同列表
+ * @param {*} id
+ * @returns
+ */
+export function getRentListAPI(id) {
+  return request({
+    url: `/park/enterprise/rent/${id}`
+  })
+}

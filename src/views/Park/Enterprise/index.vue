@@ -14,25 +14,20 @@
     <div class="table">
       <el-table style="width: 100%" :data="exterpriseList" @expand-change="expandHandle" >
         <el-table-column type="expand">
-          <template #default="scope">
-            <el-table :data="scope.row.rentList">
+          <template #default="{row}">
+            <el-table :data="row.rentList">
               <el-table-column label="租赁楼宇" width="320" prop="buildingName" />
-              <el-table-column label="租赁起始时间" prop="startTime">
-                <template #default="rentObj">
-                  {{ rentObj.row.startTime }}至{{ rentObj.row.endTime }}
-                </template>
-              </el-table-column>
-              <el-table-column label="合同状态" prop="status">
-                <template #default="rentObj">
-                  <el-tag :type="formatInfoType(rentObj.row.status)">
-                    {{ formateStatus(rentObj.row.status) }}
-                  </el-tag>
-                </template>
-              </el-table-column>
+              <el-table-column label="租赁起始时间" prop="startTime" /><el-table-column label="合同状态">
+              <template #default="scope">
+                <el-tag :type="formatInfoType(scope.row.status)">
+                  {{ formartStatus(scope.row.status) }}
+                </el-tag>
+              </template>
+            </el-table-column>
               <el-table-column label="操作" width="180">
-                <template #default="rentObj">
-                  <el-button v-if="hasPermission('park:rent:add_surrender')" size="mini" type="text" :disabled="rentObj.row.status===3" @click="rentingOut(rentObj.row.id)">退租</el-button>
-                  <el-button v-if="hasPermission('park:rent:remove')" size="mini" type="text" :disabled="rentObj.row.status !==3">删除</el-button>
+                <template #default="scope">
+                  <el-button size="mini" type="text" :disabled="scope.row.status === 3" @click="outRent(scope.row.id)">退租</el-button>
+                  <el-button size="mini" type="text" :disabled="scope.row.status !== 3" @click="delRent(scope.row.id)">删除</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -122,10 +117,10 @@
 <script>
 import {
   createRentAPI,
-  delEnterpriseAPI,
+  delEnterpriseAPI, delRentAPI,
   getEnterpriseListAPI,
   getRentBuildListAPI,
-  getRentListAPI,
+  getRentListAPI, outRentAPI,
   uploadAPI
 } from '@/api/enterprise'
 export default {
@@ -159,19 +154,84 @@ export default {
         pageSize: 5,
         name: '' // 增加字段name
       },
-      total: 0
+      total: 0,
+      rentList: []
     }
   },
   mounted() {
     this.getExterpriseList()
   },
   methods: {
+    // 删除合同
+    delRent(id) {
+      this.$confirm('确认删除此合同吗吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async() => {
+        // 1. 调用接口
+        await delRentAPI(id)
+        // 2. 重新拉取列表
+        await this.getExterpriseList()
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消删除'
+        })
+      })
+    },
+    // 格式化tag类型
+    formatInfoType(status) {
+      const MAP = {
+        0: 'warning',
+        1: 'success',
+        2: 'info',
+        3: 'danger'
+      }
+      // return 格式化之后的中文显示
+      return MAP[status]
+    },
+    formartStatus(type) {
+      const TYPEMAP = {
+        0: '待生效',
+        1: '生效中',
+        2: '已到期',
+        3: '已退租'
+      }
+      return TYPEMAP[type]
+    },
+    outRent(rentId) {
+      this.$confirm('确认退租吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async() => {
+        // 1. 调用接口
+        await outRentAPI(rentId)
+        // 2. 重新拉取列表
+        this.getEnterpriseList()
+        this.$message({
+          type: 'success',
+          message: '退租成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消退租'
+        })
+      })
+    },
     // 3. 只有展开时获取数据并绑定
     async expandHandle(row, rows) {
       console.log('展开或关闭', row, rows)
       const isExpend = rows.find(item => item.id === row.id)
       if (isExpend) {
         const res = await getRentListAPI(row.id)
+        console.log(res)
         // eslint-disable-next-line require-atomic-updates
         row.rentList = res.data
       }
@@ -310,6 +370,7 @@ export default {
           rentList: [] // 每一行补充存放合同的列表
         }
       })
+      console.log(this.exterpriseList)
       this.total = res.data.total
     }
   }

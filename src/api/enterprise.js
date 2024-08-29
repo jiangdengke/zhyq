@@ -108,3 +108,29 @@ export function getRentListAPI(id) {
     url: `/park/enterprise/rent/${id}`
   })
 }
+/**
+ * 退租
+ * @param {合同id} rentId
+ * @returns
+ */
+
+export function outRentAPI(rentId) {
+  return request({
+    url: `/park/enterprise/rent/${rentId}`,
+    method: 'PUT'
+  })
+}
+/**
+ *删除租赁合同
+ *
+ * @export
+ * @param {*} rentId 合同id
+ * @return {*}
+ */
+export function delRentAPI(rentId) {
+  return request({
+    url: `/park/enterprise/rent/${rentId}`,
+    method: 'DELETE'
+  })
+}
+

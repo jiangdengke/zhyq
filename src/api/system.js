@@ -18,3 +18,12 @@ export function delEmployeeAPI(id) {
     method: 'DELETE'
   })
 }
+/**
+ * 获取tree权限列表
+ * @returns
+ */
+export function getTreeListAPI() {
+  return request({
+    url: '/park/sys/permision/all/tree'
+  })
+}

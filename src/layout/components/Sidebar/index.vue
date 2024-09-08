@@ -28,7 +28,8 @@ export default {
   components: { SidebarItem, Logo },
   computed: {
     routes() {
-      return this.$router.options.routes
+      // this.$router.options.routes不是响应式的，只能取创建路由对象传入的路由规则，后续添加的路由不会被监听
+      return this.$store.state.menu.menuList
     },
     activeMenu() {
       const route = this.$route

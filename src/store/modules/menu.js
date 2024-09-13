@@ -1,5 +1,5 @@
 import { getProfileAPI } from '@/api/user'
-import { routes } from '@/router/index'
+import { resetRouter, routes } from '@/router/index'
 
 export default {
   namespaced: true,
@@ -14,6 +14,11 @@ export default {
     // 修改路由规则
     setMenuList(state, asyncRoutes) {
       state.menuList = [...routes, ...asyncRoutes]
+    },
+    // 清空路由规则
+    clearMenuList(state) {
+      state.menuList = []
+      resetRouter()
     }
   },
   actions: {

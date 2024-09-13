@@ -7,23 +7,23 @@
       <el-button type="primary" @click="doSearch">查询</el-button>
     </div>
     <div class="create-container">
-      <el-button type="primary" @click="$router.push('/enterpriseAdd')">添加企业</el-button>
+      <el-button  v-permission="'park:enterprise:add_edit'" type="primary" @click="$router.push('/enterpriseAdd')">添加企业</el-button>
     </div>
 
     <!-- 表格区域 -->
     <div class="table">
-      <el-table style="width: 100%" :data="exterpriseList" @expand-change="expandHandle" >
+      <el-table style="width: 100%" :data="exterpriseList" @expand-change="expandHandle">
         <el-table-column type="expand">
           <template #default="{row}">
             <el-table :data="row.rentList">
               <el-table-column label="租赁楼宇" width="320" prop="buildingName" />
               <el-table-column label="租赁起始时间" prop="startTime" /><el-table-column label="合同状态">
-              <template #default="scope">
-                <el-tag :type="formatInfoType(scope.row.status)">
-                  {{ formartStatus(scope.row.status) }}
-                </el-tag>
-              </template>
-            </el-table-column>
+                <template #default="scope">
+                  <el-tag :type="formatInfoType(scope.row.status)">
+                    {{ formartStatus(scope.row.status) }}
+                  </el-tag>
+                </template>
+              </el-table-column>
               <el-table-column label="操作" width="180">
                 <template #default="scope">
                   <el-button size="mini" type="text" :disabled="scope.row.status === 3" @click="outRent(scope.row.id)">退租</el-button>
@@ -123,6 +123,7 @@ import {
   getRentListAPI, outRentAPI,
   uploadAPI
 } from '@/api/enterprise'
+import { mapState } from 'vuex'
 export default {
   name: 'Building',
   data() {
@@ -160,6 +161,10 @@ export default {
   },
   mounted() {
     this.getExterpriseList()
+    console.log('created', this.permissions)
+  },
+  computed: {
+    ...mapState('menu', ['permissions'])
   },
   methods: {
     // 删除合同

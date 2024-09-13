@@ -27,14 +27,14 @@ function getRoutes(firstRouterPermission, secondRouterPermission, asyncRoutes) {
     return asyncRoutes
   }
   const firstRoutes = asyncRoutes.filter(item => firstRouterPermission.includes(item.permission))
-  console.log('一级路由', firstRoutes)
+  // console.log('一级路由', firstRoutes)
   const secondRoutes = firstRoutes.map(item => {
     return {
       ...item,
       children: item.children.filter(child => secondRouterPermission.includes(child.permission))
     }
   })
-  console.log('二级路由', secondRoutes)
+  // console.log('二级路由', secondRoutes)
   return secondRoutes
 }
 router.beforeEach(async(to, from, next) => {

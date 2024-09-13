@@ -14,6 +14,9 @@ import router from './router'
 // import除了可以导入模块，还可以执行js文件
 import './permission'
 
+// 导入自定义指令
+import '@/directive'
+
 // 注册svg
 import '@/icons'
 // 把element-ui中导出的所有组件 注册成全局组件
